@@ -1,0 +1,295 @@
+{
+  "name": "My workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 6
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        -20
+      ],
+      "id": "982720c0-82f7-451c-a672-d8476765fae4",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "You are a Trail Running Assistant AI agent.\n\"tool\": \"get_weather\"[\n  {\n    \"tool\": \"get_weather\",\n    \"parameters\": {\n      \"location\": \"Bangalore\"\n    }\n  },\n  {\n    \"tool\": \"get_air_quality\",\n    \"parameters\": {\n      \"location\": \"Bangalore\"\n    }\n  },\n  {\n    \"tool\": \"create_event\",\n    \"parameters\": {\n      \"summary\": \"Trail Run\",\n      \"start\": \"2025-05-31T06:00:00Z\",\n      \"end\": \"2025-05-31T07:00:00Z\"\n    }\n  }\n]\nPlan a 1-hour trail run tomorrow at 6 AM in Bangalore. \nCheck the weather, air quality, get trail data from the Google Sheet, and schedule it on my calendar.\n{\n  \"tool\": \"create_event\",\n  \"parameters\": {\n    \"summary\": \"1-hour Trail Run\",\n    \"location\": \"Bangalore\",\n    \"description\": \"Planned using weather, air quality, and trail info.\",\n    \"start\": \"2025-05-31T06:00:00+05:30\",\n    \"end\": \"2025-05-31T07:00:00+05:30\"\n  }\n}\n{\n  \"tool\": \"trails Sheets\",\n  \"parameters\": {\n    \"sheetName\": \"BangaloreTrails\",\n    \"range\": \"A2:D10\"\n  }\n}\n{\n  \"tool\": \"trails Sheets\",\n  \"parameters\": {\n    \"sheetName\": \"BangaloreTrails\",\n    \"range\": \"A2:D10\"\n  }\n}\n",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        440,
+        -120
+      ],
+      "id": "01496896-e94a-4b81-bc78-2a128c32dcd3",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "{   \"sessionId\": \"user-123\"  ' ← Any unique string }"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        260,
+        180
+      ],
+      "id": "bb6fb70f-9937-4700-bd2c-d458a91ca42a",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        -220
+      ],
+      "id": "0e46c06c-12c0-40b9-97ac-ced642df4514",
+      "name": "When chat message received",
+      "webhookId": "9d1f87de-6d12-49db-8642-bfa240654d05"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o-mini-tts",
+          "mode": "list",
+          "cachedResultName": "gpt-4o-mini-tts"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        180
+      ],
+      "id": "eadef69b-188c-4d4b-84c6-e0092649e7d9",
+      "name": "OpenAI",
+      "credentials": {
+        "openAiApi": {
+          "id": "CRfHz3A9E5tuakmx",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1-L7-pOorFSxqeBlymLitv0QgkWo90p4wOEELB9GJecQ",
+          "mode": "list",
+          "cachedResultName": "trails",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1-L7-pOorFSxqeBlymLitv0QgkWo90p4wOEELB9GJecQ/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1-L7-pOorFSxqeBlymLitv0QgkWo90p4wOEELB9GJecQ/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.6,
+      "position": [
+        820,
+        160
+      ],
+      "id": "49066709-c08d-43df-bcf5-97518312aeef",
+      "name": "trails Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "uRT2SvEdfwlyNWvE",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "format": "imperial",
+        "cityName": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('City', ``, 'string') }}"
+      },
+      "type": "n8n-nodes-base.openWeatherMapTool",
+      "typeVersion": 1,
+      "position": [
+        640,
+        180
+      ],
+      "id": "fc02c4dd-87df-4f71-b7bc-d8117cf9d951",
+      "name": "get_weather",
+      "credentials": {
+        "openWeatherMapApi": {
+          "id": "E8KkioE9Y16LysPT",
+          "name": "OpenWeatherMap account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "calendar": {
+          "__rl": true,
+          "value": "varshinir2004.email.com@gmail.com",
+          "mode": "list",
+          "cachedResultName": "varshinir2004.email.com@gmail.com"
+        },
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        460,
+        180
+      ],
+      "id": "6dce8049-baa8-4abc-8045-517992b1fa9f",
+      "name": "create_event",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "MsY6hctdi4CHSrmj",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "varshinir2004.email.com@gmail.com",
+        "subject": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Subject', ``, 'string') }}",
+        "message": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Message', ``, 'string') }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.1,
+      "position": [
+        1000,
+        160
+      ],
+      "id": "14df90b5-0e92-4241-ac97-ff37269c2019",
+      "name": "Gmail",
+      "webhookId": "fd743c86-5fc1-4b39-96fc-386fdd709ba0",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "zvp6nbPL7W27T2TX",
+          "name": "Gmail account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "trails Sheets": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get_weather": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create_event": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "1fd0980e-9753-4a42-94e5-166ef1661520",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "3c98262d953c1a0877430e382db551916f1f0173fe0f8cdcef6d596ac6c56a7e"
+  },
+  "id": "LvVsK9R5Hlsd447b",
+  "tags": []
+}
