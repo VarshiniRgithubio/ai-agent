@@ -37,4 +37,5 @@ An AI-powered virtual assistant built using **OpenAI GPT-4o-mini** and **n8n** t
 ## 🚀 Get Started
 
 ```bash
-git clone https://github.com/VarshiniRgithubio/zomato-restaurant-dashboard.git
+git clone https://github.com/VarshiniRgithubio/ai-agent.git
+cd ai-agent
